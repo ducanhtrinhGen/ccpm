@@ -1,41 +1,47 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
-    container_name: cv_mysql
+    container_name: ccpm-db
     restart: always
     environment:
-      MYSQL_DATABASE: huynhquocnam
-      MYSQL_USER: ecommerce_user
-      MYSQL_PASSWORD: Nam@123456
-      MYSQL_ROOT_PASSWORD: Nam@123456
+      MYSQL_DATABASE: course_registration_db
+      MYSQL_USER: course_user
+      MYSQL_PASSWORD: course_password
+      MYSQL_ROOT_PASSWORD: root_password
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
-      - cv_network
+      - ccpm_network
 
-  backend:
-    build: ./backend
-    container_name: cv_backend
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ccpm-app
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/huynhquocnam?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=ecommerce_user
-      - SPRING_DATASOURCE_PASSWORD=Nam@123456
-      - CORS_ALLOWED_ORIGIN=http://localhost:3000
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/course_registration_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: course_user
+      SPRING_DATASOURCE_PASSWORD: course_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     ports:
       - "8080:8080"
     networks:
-      - cv_network
+      - ccpm_network
 
 volumes:
   mysql_data:
- 
+
 networks:
-  cv_network:
+  ccpm_network:
     driver: bridge
