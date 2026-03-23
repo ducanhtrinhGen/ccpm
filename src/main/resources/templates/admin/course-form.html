@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${formTitle}">Course Form</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero">
+            <p class="eyebrow">Quản lý khóa học</p>
+            <h1 th:text="${formTitle}">Thêm Khóa Học Mới</h1>
+            <p class="hero-copy">Nhập thông tin học phần gồm tên, số tín chỉ, giảng viên và tên file hình ảnh.</p>
+        </section>
+
+        <section class="admin-form-shell">
+            <form class="admin-form" th:action="${formAction}" th:object="${course}" method="post">
+                <label>
+                    Tên học phần
+                    <input type="text" th:field="*{name}" required>
+                </label>
+
+                <label>
+                    Số tín chỉ
+                    <input type="number" min="1" th:field="*{credits}" required>
+                </label>
+
+                <label>
+                    Giảng viên
+                    <input type="text" th:field="*{lecturer}" required>
+                </label>
+
+                <label>
+                    Hình ảnh
+                    <input type="text" th:field="*{imageUrl}" placeholder="java.jpg hoặc /images/course-1.svg" required>
+                </label>
+
+                <div class="admin-actions">
+                    <a class="page-link" th:href="@{/admin/courses}">Hủy</a>
+                    <button class="page-link page-number active" type="submit">Lưu</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
